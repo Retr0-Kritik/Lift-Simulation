@@ -1,15 +1,13 @@
 .input {
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: bold;
-  font-size: larger;
-  display:flex;
+  font: bold larger Arial, Helvetica, sans-serif;
+  display: flex;
   justify-content: space-around;
-  flex-shrink:60px;
   background-color: rgba(0, 0, 255, 0.608);
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  padding:10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
   min-width: 100px;
+  flex-shrink: 1;
 }
