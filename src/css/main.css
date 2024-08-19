@@ -1,4 +1,4 @@
-
+/*For Input*/
 
 .input {
   margin: 0;
@@ -20,6 +20,7 @@
   justify-content: center;
   align-items: center;
 }
+
 .submit{
   cursor:pointer;
   height:60px;
@@ -27,13 +28,109 @@
   background-color:rgb(251, 251, 251);
   border-radius: 10px;
 }
+
 .submit:hover{
   background-color:rgb(177, 177, 177);
 }
+
 .submit:active{
   background-color:rgb(126, 128, 128);
 }
+
 .floors,.lifts{
   width:190px;
   border-radius:5px;
+}
+
+/*For Simulation*/
+
+#simulation {
+  font: bold larger Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 50px;
+}
+
+.sim-floors {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  height: 150px;
+}
+
+.sim-floors:last-child {
+  margin-top: 30px;
+}
+
+.button-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 40px;
+  width: 80px;
+  z-index: 1;
+}
+
+.floor-container {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.line {
+  flex-grow: 1;
+  border-top: 4px solid black;
+  margin: 0 10px;
+}
+
+.floor-no {
+  text-align: right;
+  font-size: 18px;
+  margin-top: 3px;
+}
+
+.up, .down {
+  font-weight: 800;
+  border-radius: 10px;
+  border: none;
+  padding: 10px 20px;
+  margin-bottom: 3px;
+  cursor: pointer;
+  display: flex;
+}
+
+.up {
+  background: #00b300;
+  color: black;
+}
+
+.down {
+  background: #ffcc00;
+  color: black;
+}
+
+#sim-lifts {
+  position: absolute;
+  left: 85px;
+  right: 10px;
+  top: 10px;
+  bottom: 10px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 90.3%;
+}
+
+.lift {
+  flex: 1;
+  min-width: 40px;
+  max-width: 70px;
+  height: 130px;
+  background: rgb(0, 153, 255);
 }

@@ -6,7 +6,7 @@
   <title>Lif-Simulator</title>
   <link rel="stylesheet" href="\Lift-Simulation\src\css\main.css">
   <style>
-    #input-section {
+    #simulation {
       display:none;
     }
   </style>
@@ -29,7 +29,28 @@
 </div>
 
 <div id="simulation">
-  
+  <div class="sim-floors">
+    <div class="button-container">
+      <button class="up">Up</button>
+    </div>
+    <div id="sim-lifts">
+      <div class="lift"></div>
+    </div>
+    <div class="floor-container">
+      <div class="line"></div>
+      <div class="floor-no">Floor 1</div>
+    </div>
+  </div>
+  <div class="sim-floors">
+    <div class="button-container">
+      <button class="up">Up</button>
+      <button class="down">Down</button>
+    </div>
+    <div class="floor-container">
+      <div class="line"></div>
+      <div class="floor-no">Floor 2</div>
+    </div>
+  </div>
 </div>
 </body>
 </html>
