@@ -4,16 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lif-Simulator</title>
+  <link rel="stylesheet" href="\Lift-Simulation\src\css\main.css">
+  <style>
+    #input-section {
+      display:none;
+    }
+  </style>
 </head>
-<link rel="stylesheet" href="\Lift-Simulation\src\css\main.css">
 <body>
-<div class="input">
-  <div>
-    Enter the no. of Floors: <input class="floors" style="font-size:14pt;" type="number" placeholder="1-4">
+<div id="input-section">  
+  <div class="input">
+    <div>
+      Enter the no. of Floors: <br><br>
+    </div>
+    <input class="floors" style="font-size:16pt;" type="number" placeholder="1-10" min="1" max="10" required size="2">
+    <div>
+      Enter the no. of Lifts: <br><br>
+    </div>
+    <input class="lifts" style="font-size:16pt;" type="number" placeholder="1-10" min="1" max="10" required size="2">
   </div>
-  <div>
-    Enter the no. of Lifts: <input class="lifts" style="font-size:14pt;" type="number" placeholder="1-4">
+  <div class="button">
+  <button class="submit" style="font-size:16pt;">Submit</button>
   </div>
+</div>
+
+<div id="simulation">
+  
 </div>
 </body>
 </html>
