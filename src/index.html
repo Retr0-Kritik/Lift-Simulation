@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lif-Simulator</title>
   <link rel="stylesheet" href="\Lift-Simulation\src\css\main.css">
-  <style>
+  <style id="web">
     #simulation {
+      display:none;
+    }
+    .back{
       display:none;
     }
   </style>
@@ -17,24 +20,32 @@
     <div>
       Enter the no. of Floors: <br><br>
     </div>
-    <input class="floors" style="font-size:16pt;" type="number" placeholder="2-10" min="2" max="10" required size="2">
+    <input id="floors" style="font-size:16pt;" type="number" placeholder="2-10" min="2" max="10" required size="2"/>
     <div>
       Enter the no. of Lifts: <br><br>
     </div>
-    <input class="lifts" style="font-size:16pt;" type="number" placeholder="2-10" min="2" max="10" required size="2">
+    <input id="lifts" style="font-size:16pt;" type="number" placeholder="2-10" min="2" max="10" required size="2"/>
   </div>
   <div class="button">
   <button class="submit" style="font-size:16pt;">Submit</button>
   </div>
 </div>
 
+<div>
+  <button class="back" style="font-size:16pt;">GO BACK</button>
+</div>
+
 <div id="simulation">
   <div class="sim-floors">
     <div class="button-container">
       <button class="up">Up</button>
+      <button class="down">Down</button>
     </div>
     <div id="sim-lifts">
-      <div class="lift"></div>
+      <div class="lift">
+        <div class="lift-door-left"></div>
+        <div class="lift-door-right"></div>
+      </div>
     </div>
     <div class="floor-container">
       <div class="line"></div>
@@ -52,5 +63,6 @@
     </div>
   </div>
 </div>
+<script src="\Lift-Simulation\src\js\main.js"></script>
 </body>
 </html>

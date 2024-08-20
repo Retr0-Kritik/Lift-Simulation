@@ -1,5 +1,16 @@
 /*For Input*/
+#input-section,
+#simulation {
+  width: 100%; /* Ensure the width stays consistent */
+  height: 100%; /* Maintain the height */
+}
 
+#input-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 .input {
   margin: 0;
   display: flex;
@@ -10,7 +21,7 @@
   padding-top: 200px;
 }
 
-.floors {
+#floors {
   margin-bottom: 100px;
 }
 
@@ -27,6 +38,7 @@
   width:120px;
   background-color:rgb(251, 251, 251);
   border-radius: 10px;
+  border: 1px solid black;
 }
 
 .submit:hover{
@@ -37,9 +49,10 @@
   background-color:rgb(126, 128, 128);
 }
 
-.floors,.lifts{
+#floors,#lifts{
   width:190px;
   border-radius:5px;
+  border: 1px solid black;
 }
 
 /*For Simulation*/
@@ -60,7 +73,7 @@
 }
 
 .sim-floors:last-child {
-  margin-top: 30px;
+  margin-top: 100px;
 }
 
 .button-container {
@@ -72,6 +85,7 @@
   width: 80px;
   z-index: 1;
 }
+
 
 .floor-container {
   display: flex;
@@ -109,9 +123,25 @@
   color: black;
 }
 
+.up:hover {
+  background: #00b3009a;
+}
+
+.up:active{
+  background: #00b300e0;
+}
+
 .down {
   background: #ffcc00;
   color: black;
+}
+
+.down:hover{
+  background: #ffcc00a4;
+}
+
+.down:active{
+  background: #ffcc00d2;
 }
 
 #sim-lifts {
@@ -119,7 +149,7 @@
   left: 85px;
   right: 10px;
   top: 10px;
-  bottom: 10px;
+  bottom: -30px;
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
@@ -130,7 +160,31 @@
 .lift {
   flex: 1;
   min-width: 40px;
-  max-width: 70px;
-  height: 130px;
+  max-width: 45px;
+  height: 75px;
   background: rgb(0, 153, 255);
+}
+
+.back{
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  position:absolute;
+  top:10px;
+  right:10px;
+  float:right;
+  background:rgba(60, 0, 255, 0.522);
+  padding: 7px;
+  border-radius: 10px;
+  border:none;
+  padding-top:10px;
+  padding-bottom:10px;
+  cursor:pointer;
+}
+
+.back:hover{
+  background: rgba(60, 0, 255, 0.381);
+}
+
+.back:active{
+  background: rgba(60, 0, 255, 0.474);
 }
