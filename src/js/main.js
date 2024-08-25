@@ -2,41 +2,97 @@ const submitButton = document.querySelector('.submit');
 const backButton = document.querySelector('.back');
 const inputSection = document.getElementById('input-section');
 const simulationSection = document.getElementById('simulation');
-const upButton = document.querySelector('.up');
-const downButton = document.querySelector('.down');
 let floorNos = document.getElementById('floors');
 let liftNos = document.getElementById('lifts');
-const noOfLifts = document.querySelector('.sim-lifts');
-const lift = document.querySelector('.lift');
-const noOfFloors = document.querySelector('.sim-floors');
-const floor = document.querySelector('.floor');
 
 submitButton.addEventListener('click', () => {
-  let errorMessage = '';
-  let n = floorNos.value;
-  let m = liftNos.value;
-  let i = 0;
-  
+    let errorMessage = '';
+    let n = parseInt(floorNos.value);
+    let m = parseInt(liftNos.value);
 
-  if (n < 2 || n > 10) {
-    errorMessage += 'Floor number must be between 2 and 10.\n';
-  }
-  if (m < 2 || m > 10) {
-    errorMessage += 'Lift number must be between 2 and 10.\n';
-  }
+    if (n < 1) {
+        errorMessage += 'Invalid Floor Input.\n';
+    }
+    if (m < 1) {
+        errorMessage += 'Invalid Lift Input.\n';
+    }
 
-  if (errorMessage) {
-    alert(errorMessage);
-  } else {
-    inputSection.style.display = 'none';
-    simulationSection.style.display = 'flex';
-    backButton.style.display = 'block';
-  }
+    if (errorMessage) {
+        alert(errorMessage);
+    } else {
 
+        const newSimLiftsContainer = document.createElement('div');
+        newSimLiftsContainer.id = 'sim-lifts';
+
+
+        for (let i = 0; i < n; i++) {
+            const floorDiv = document.createElement('div');
+            floorDiv.classList.add('sim-floors');
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.classList.add('button-container');
+
+            const upButton = document.createElement('button');
+            upButton.classList.add('up');
+            upButton.textContent = 'Up';
+            const downButton = document.createElement('button');
+            downButton.classList.add('down');
+            downButton.textContent = 'Down';
+
+            if (i === n - 1) upButton.style.display = 'none';
+            if (i === 0) downButton.style.display = 'none';
+
+            buttonContainer.appendChild(upButton);
+            buttonContainer.appendChild(downButton);
+
+            const floorContainer = document.createElement('div');
+            floorContainer.classList.add('floor-container');
+
+            const line = document.createElement('div');
+            line.classList.add('line');
+
+            const floorNo = document.createElement('div');
+            floorNo.classList.add('floor-no');
+            floorNo.textContent = `Floor ${i + 1}`; 
+
+            floorContainer.appendChild(line);
+            floorContainer.appendChild(floorNo);
+
+            floorDiv.appendChild(buttonContainer);
+            floorDiv.appendChild(floorContainer);
+
+            simulationSection.appendChild(floorDiv);
+
+        
+            if (i === 0) {
+                for (let j = 0; j < m; j++) {
+                    const liftDiv = document.createElement('div');
+                    liftDiv.classList.add('lift');
+
+                    const liftDoorLeft = document.createElement('div');
+                    liftDoorLeft.classList.add('lift-door-left');
+
+                    const liftDoorRight = document.createElement('div');
+                    liftDoorRight.classList.add('lift-door-right');
+
+                    liftDiv.appendChild(liftDoorLeft);
+                    liftDiv.appendChild(liftDoorRight);
+
+                    newSimLiftsContainer.appendChild(liftDiv);
+                }
+
+                floorDiv.appendChild(newSimLiftsContainer);
+            }
+        }
+        newSimLiftsContainer.scrollLeft = newSimLiftsContainer.scrollWidth;
+        inputSection.style.display = 'none';
+        simulationSection.style.display = 'flex';
+        backButton.style.display = 'block';
+    }
 });
 
 backButton.addEventListener('click', () => {
-  simulationSection.style.display = 'none';
-  inputSection.style.display = 'flex';
-  backButton.style.display = 'none';
+    simulationSection.style.display = 'none';
+    inputSection.style.display = 'flex';
+    backButton.style.display = 'none';
 });
