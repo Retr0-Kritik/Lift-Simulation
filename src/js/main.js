@@ -5,6 +5,12 @@ const simulationSection = document.getElementById('simulation');
 let floorNos = document.getElementById('floors');
 let liftNos = document.getElementById('lifts');
 
+function clearContent() {
+    while (simulationSection.firstChild) {
+        simulationSection.removeChild(simulationSection.firstChild);
+    }
+}
+
 submitButton.addEventListener('click', () => {
     let errorMessage = '';
     let n = parseInt(floorNos.value);
@@ -20,7 +26,6 @@ submitButton.addEventListener('click', () => {
     if (errorMessage) {
         alert(errorMessage);
     } else {
-
         const newSimLiftsContainer = document.createElement('div');
         newSimLiftsContainer.id = 'sim-lifts';
 
@@ -88,10 +93,17 @@ submitButton.addEventListener('click', () => {
         inputSection.style.display = 'none';
         simulationSection.style.display = 'flex';
         backButton.style.display = 'block';
+
+        newSimLiftsContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        newSimLiftsContainer.scrollLeft += e.deltaY;
+        
+        });
     }
 });
 
 backButton.addEventListener('click', () => {
+    clearContent();
     simulationSection.style.display = 'none';
     inputSection.style.display = 'flex';
     backButton.style.display = 'none';
