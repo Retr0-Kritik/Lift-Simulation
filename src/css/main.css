@@ -155,12 +155,16 @@
 }
 
 .lift {
-  flex: 1;
-  min-width: 60px;
-  margin: 0 5px; 
-  max-width: 45px;
+  display: flex;
+  flex-direction: row; /* Ensures the doors are placed side by side */
+  justify-content: space-between; /* Adds space between the doors */
+  align-items: center;
+  width: 60px; /* Adjust the width of the lift */
   height: 75px;
   background: rgb(0, 153, 255);
+  position: relative;
+  margin: 0 5px;
+  overflow: hidden;
 }
 
 .back{
@@ -185,4 +189,35 @@
 
 .back:active{
   background: rgba(60, 0, 255, 0.474);
+}
+
+.lift-door-left,
+.lift-door-right {
+  width: 50%;
+  height: 100%;
+  position: absolute;
+}
+.lift-door-left {
+  background: silver;
+  border-right: 1.5px solid black;
+  left:0;
+  animation: ldoor 5s;
+}
+.lift-door-right {
+  background: silver;
+  border-left: 1.5px solid black;
+  right:0;
+  animation: rdoor 5s;
+}
+
+@keyframes ldoor{
+  0%{left:0;}
+  50%{left:-50%;}
+  100%{left:0;}
+}
+
+@keyframes rdoor{
+  0%{right:0;}
+  50%{right:-50%;}
+  100%{right:0;}
 }
