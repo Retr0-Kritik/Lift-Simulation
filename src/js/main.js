@@ -71,8 +71,8 @@ submitButton.addEventListener('click', () => {
         
             if (i === 0) {
                 for (let j = 0; j < m; j++) {
-                    const liftDiv = document.createElement('div');
-                    liftDiv.classList.add('lift');
+                    const lift = document.createElement('div');
+                    lift.classList.add('lift');
 
                     const liftDoorLeft = document.createElement('div');
                     liftDoorLeft.classList.add('lift-door-left');
@@ -80,10 +80,10 @@ submitButton.addEventListener('click', () => {
                     const liftDoorRight = document.createElement('div');
                     liftDoorRight.classList.add('lift-door-right');
 
-                    liftDiv.appendChild(liftDoorLeft);
-                    liftDiv.appendChild(liftDoorRight);
+                    lift.appendChild(liftDoorLeft);
+                    lift.appendChild(liftDoorRight);
 
-                    newSimLiftsContainer.appendChild(liftDiv);
+                    newSimLiftsContainer.appendChild(lift);
                 }
 
                 floorDiv.appendChild(newSimLiftsContainer);

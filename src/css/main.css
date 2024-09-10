@@ -62,6 +62,7 @@
   display: flex;
   flex-direction: column-reverse;
   gap: 50px;
+  overflow: visible;
 }
 
 .sim-floors {
@@ -70,6 +71,7 @@
   justify-content: space-between;
   position: relative;
   height: 150px;
+  overflow: visible;
 }
 
 .sim-floors:last-child {
@@ -152,14 +154,18 @@
   margin-left: 90px;
   padding-top: 60px;
   scrollbar-width: none;
+  overflow: visible;
+}
+
+#sim-lifts::-webkit-scrollbar {
+  display: none;
 }
 
 .lift {
-  display: flex;
-  flex-direction: row; /* Ensures the doors are placed side by side */
-  justify-content: space-between; /* Adds space between the doors */
-  align-items: center;
-  width: 60px; /* Adjust the width of the lift */
+  animation: moveLift 2s;
+  animation-fill-mode: both;
+  min-width: 60px;
+  flex-shrink: 0;
   height: 75px;
   background: rgb(0, 153, 255);
   position: relative;
@@ -220,4 +226,13 @@
   0%{right:0;}
   50%{right:-50%;}
   100%{right:0;}
+}
+
+@keyframes moveLift{
+  from{
+    transform: translateY(0);
+  }
+  to{
+    transform: translateY(-200px);
+  }
 }
