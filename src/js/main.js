@@ -118,6 +118,9 @@ submitButton.addEventListener('click', () => {
     if (isNaN(m) || m < 1) {
         errorMessage += 'Invalid Lift Input.\n';
     }
+    if (isNaN(n) || n === 1) {
+        errorMessage += 'No Lifts required for One Floor.\n';
+    }
 
     if (errorMessage) {
         alert(errorMessage);
