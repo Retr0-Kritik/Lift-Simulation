@@ -7,6 +7,8 @@ let liftNos = document.getElementById('lifts');
 
 let liftMovingOrder = [];
 let lifts = [];
+let floorOccupancy = {};
+let liftsEnRoute = {};
 
 function clearContent() {
     while (simulationSection.firstChild) {
@@ -15,17 +17,31 @@ function clearContent() {
 }
 
 function storeLiftRequest(floorNumber) {
-    liftMovingOrder.push(floorNumber);
+    if (!liftMovingOrder.includes(floorNumber)) {
+        liftMovingOrder.push(floorNumber);
+    }
 }
 
 function moveLiftInOrder(floorNumber) {
-    let stationaryLift = lifts.find(lift => lift.dataset.status === "free");
+    let stationaryLift = lifts.find(lift => lift.dataset.status === "free" && parseInt(lift.dataset.current) === floorNumber);
     if (stationaryLift) {
-        if (parseInt(stationaryLift.dataset.current) === floorNumber) {
-            doorsMovement(stationaryLift, floorNumber);
-        } else {
-            liftMovement(stationaryLift, floorNumber);
+        doorsMovement(stationaryLift, floorNumber);
+        return;
+    }
+
+    if ((floorOccupancy[floorNumber] || 0) + (liftsEnRoute[floorNumber] || 0) >= 2) {
+        console.log(`Floor ${floorNumber} already has 2 lifts assigned. Opening doors of an existing lift.`);
+        let liftOnFloor = lifts.find(lift => parseInt(lift.dataset.current) === floorNumber);
+        if (liftOnFloor) {
+            doorsMovement(liftOnFloor, floorNumber);
         }
+        return;
+    }
+
+    stationaryLift = lifts.find(lift => lift.dataset.status === "free");
+    if (stationaryLift) {
+        liftMovement(stationaryLift, floorNumber);
+        liftsEnRoute[floorNumber] = (liftsEnRoute[floorNumber] || 0) + 1;
     } else {
         storeLiftRequest(floorNumber);
     }
@@ -43,7 +59,6 @@ function doorsMovement(lift, floorNumber) {
         leftDoor.style.animation = '';
         rightDoor.style.animation = '';
         lift.dataset.status = "free";
-        lift.dataset.current = floorNumber;
         checkQueue();
     }, 2500);
 }
@@ -51,6 +66,7 @@ function doorsMovement(lift, floorNumber) {
 function liftMovement(lift, floorNumber) {
     lift.dataset.status = "busy";
     const currentFloor = parseInt(lift.dataset.current);
+    floorOccupancy[currentFloor] = (floorOccupancy[currentFloor] || 1) - 1;
     const distance = Math.abs(currentFloor - floorNumber);
     const moveTime = distance * 2;
     const newBottom = (floorNumber - 1) * 200;
@@ -61,14 +77,22 @@ function liftMovement(lift, floorNumber) {
     setTimeout(() => {
         lift.style.transition = ''; 
         lift.dataset.current = floorNumber;
+        floorOccupancy[floorNumber] = (floorOccupancy[floorNumber] || 0) + 1;
+        liftsEnRoute[floorNumber]--;
         doorsMovement(lift, floorNumber);
     }, moveTime * 1000);
 }
 
 function checkQueue() {
     if (liftMovingOrder.length > 0) {
-        const nextFloor = liftMovingOrder.shift();
-        moveLiftInOrder(nextFloor);
+        const nextFloor = liftMovingOrder[0];
+        if ((floorOccupancy[nextFloor] || 0) + (liftsEnRoute[nextFloor] || 0) < 2) {
+            liftMovingOrder.shift();
+            moveLiftInOrder(nextFloor);
+        } else {
+            liftMovingOrder.shift();
+            checkQueue();
+        }
     }
 }
 
@@ -89,6 +113,11 @@ submitButton.addEventListener('click', () => {
     } else {
         const newSimLiftsContainer = document.createElement('div');
         newSimLiftsContainer.id = 'sim-lifts';
+
+        for (let i = 1; i <= n; i++) {
+            floorOccupancy[i] = 0;
+            liftsEnRoute[i] = 0;
+        }
 
         for (let i = 0; i < n; i++) {
             const floorDiv = document.createElement('div');
@@ -155,6 +184,7 @@ submitButton.addEventListener('click', () => {
                 }
 
                 floorDiv.appendChild(newSimLiftsContainer);
+                floorOccupancy[1] = m;
             }
         }
         newSimLiftsContainer.scrollLeft = newSimLiftsContainer.scrollWidth;
@@ -176,4 +206,6 @@ backButton.addEventListener('click', () => {
     backButton.style.display = 'none';
     liftMovingOrder = [];
     lifts = [];
+    floorOccupancy = {};
+    liftsEnRoute = {};
 });
