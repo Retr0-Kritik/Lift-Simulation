@@ -48,20 +48,31 @@ function moveLiftInOrder(floorNumber) {
 }
 
 function doorsMovement(lift, floorNumber) {
-    lift.dataset.status = "busy";
+    if (lift.dataset.doorStatus === "busy") return;
+
+    lift.dataset.doorStatus = "busy";
+    lift.dataset.status = "busy"; 
+
     const leftDoor = lift.querySelector('.lift-door-left');
     const rightDoor = lift.querySelector('.lift-door-right');
 
-    leftDoor.style.animation = 'ldoor 2.5s';
-    rightDoor.style.animation = 'rdoor 2.5s';
+    leftDoor.style.animation = 'none';
+    rightDoor.style.animation = 'none';
+    void leftDoor.offsetHeight;
+
+    leftDoor.style.animation = 'ldoor 5s';
+    rightDoor.style.animation = 'rdoor 5s';
 
     setTimeout(() => {
+        // Reset animation styles
         leftDoor.style.animation = '';
         rightDoor.style.animation = '';
+        lift.dataset.doorStatus = "free";
         lift.dataset.status = "free";
         checkQueue();
-    }, 2500);
+    }, 5000);
 }
+
 
 function liftMovement(lift, floorNumber) {
     lift.dataset.status = "busy";
