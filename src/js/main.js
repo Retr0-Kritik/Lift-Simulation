@@ -64,7 +64,6 @@ function doorsMovement(lift, floorNumber) {
     rightDoor.style.animation = 'rdoor 5s';
 
     setTimeout(() => {
-        // Reset animation styles
         leftDoor.style.animation = '';
         rightDoor.style.animation = '';
         lift.dataset.doorStatus = "free";
