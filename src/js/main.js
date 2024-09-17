@@ -9,6 +9,8 @@ let liftMovingOrder = [];
 let lifts = [];
 let floorOccupancy = {};
 let liftsEnRoute = {};
+let busyUpFloors = new Set();
+let busyDownFloors = new Set();
 
 function clearContent() {
     while (simulationSection.firstChild) {
@@ -16,38 +18,56 @@ function clearContent() {
     }
 }
 
-function storeLiftRequest(floorNumber) {
-    if (!liftMovingOrder.includes(floorNumber)) {
-        liftMovingOrder.push(floorNumber);
+function storeLiftRequest(floorNumber, direction) {
+    const request = { floor: floorNumber, direction: direction };
+    if (!liftMovingOrder.some(r => r.floor === floorNumber && r.direction === direction)) {
+        liftMovingOrder.push(request);
     }
 }
 
-function moveLiftInOrder(floorNumber) {
+function findClosestLift(floorNumber) {
+    let closestLift = null;
+    let minDistance = Infinity;
+
+    for (let lift of lifts) {
+        if (lift.dataset.status === "free") {
+            const distance = Math.abs(parseInt(lift.dataset.current) - floorNumber);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestLift = lift;
+            }
+        }
+    }
+
+    return closestLift;
+}
+
+function moveLiftInOrder(floorNumber, direction) {
+    const busySet = direction === 'up' ? busyUpFloors : busyDownFloors;
+    if (busySet.has(floorNumber)) {
+        console.log(`Floor ${floorNumber} ${direction} is busy. Request queued.`);
+        storeLiftRequest(floorNumber, direction);
+        return;
+    }
+
     let stationaryLift = lifts.find(lift => lift.dataset.status === "free" && parseInt(lift.dataset.current) === floorNumber);
     if (stationaryLift) {
-        doorsMovement(stationaryLift, floorNumber);
+        doorsMovement(stationaryLift, floorNumber, direction);
         return;
     }
 
-    if ((floorOccupancy[floorNumber] || 0) + (liftsEnRoute[floorNumber] || 0) >= 2) {
-        console.log(`Floor ${floorNumber} already has 2 lifts assigned. Opening doors of an existing lift.`);
-        let liftOnFloor = lifts.find(lift => parseInt(lift.dataset.current) === floorNumber);
-        if (liftOnFloor) {
-            doorsMovement(liftOnFloor, floorNumber);
-        }
-        return;
-    }
-
-    stationaryLift = lifts.find(lift => lift.dataset.status === "free");
-    if (stationaryLift) {
-        liftMovement(stationaryLift, floorNumber);
+    let closestLift = findClosestLift(floorNumber);
+    if (closestLift) {
+        liftMovement(closestLift, floorNumber, direction);
         liftsEnRoute[floorNumber] = (liftsEnRoute[floorNumber] || 0) + 1;
+        busySet.add(floorNumber);
+        updateFloorButton(floorNumber, direction, true);
     } else {
-        storeLiftRequest(floorNumber);
+        storeLiftRequest(floorNumber, direction);
     }
 }
 
-function doorsMovement(lift, floorNumber) {
+function doorsMovement(lift, floorNumber, direction) {
     if (lift.dataset.doorStatus === "busy") return;
 
     lift.dataset.doorStatus = "busy";
@@ -68,12 +88,14 @@ function doorsMovement(lift, floorNumber) {
         rightDoor.style.animation = '';
         lift.dataset.doorStatus = "free";
         lift.dataset.status = "free";
+        const busySet = direction === 'up' ? busyUpFloors : busyDownFloors;
+        busySet.delete(parseInt(lift.dataset.current));
+        updateFloorButton(parseInt(lift.dataset.current), direction, false);
         checkQueue();
     }, 5000);
 }
 
-
-function liftMovement(lift, floorNumber) {
+function liftMovement(lift, floorNumber, direction) {
     lift.dataset.status = "busy";
     const currentFloor = parseInt(lift.dataset.current);
     floorOccupancy[currentFloor] = (floorOccupancy[currentFloor] || 1) - 1;
@@ -89,20 +111,30 @@ function liftMovement(lift, floorNumber) {
         lift.dataset.current = floorNumber;
         floorOccupancy[floorNumber] = (floorOccupancy[floorNumber] || 0) + 1;
         liftsEnRoute[floorNumber]--;
-        doorsMovement(lift, floorNumber);
+        doorsMovement(lift, floorNumber, direction);
     }, moveTime * 1000);
 }
 
 function checkQueue() {
     if (liftMovingOrder.length > 0) {
-        const nextFloor = liftMovingOrder[0];
-        if ((floorOccupancy[nextFloor] || 0) + (liftsEnRoute[nextFloor] || 0) < 2) {
+        const nextRequest = liftMovingOrder[0];
+        const busySet = nextRequest.direction === 'up' ? busyUpFloors : busyDownFloors;
+        if (!busySet.has(nextRequest.floor)) {
             liftMovingOrder.shift();
-            moveLiftInOrder(nextFloor);
-        } else {
-            liftMovingOrder.shift();
-            checkQueue();
+            moveLiftInOrder(nextRequest.floor, nextRequest.direction);
         }
+    }
+}
+
+function updateFloorButton(floorNumber, direction, isBusy) {
+    const floorDiv = document.querySelector(`.sim-floors:nth-child(${floorNumber})`);
+    const button = floorDiv.querySelector(`.${direction}`);
+    if (isBusy) {
+        button.disabled = true;
+        button.style.backgroundColor = 'red';
+    } else {
+        button.disabled = false;
+        button.style.backgroundColor = ''; // Reset to default color
     }
 }
 
@@ -142,12 +174,20 @@ submitButton.addEventListener('click', () => {
             const upButton = document.createElement('button');
             upButton.classList.add('up');
             upButton.textContent = 'Up';
-            upButton.addEventListener('click', () => moveLiftInOrder(i + 1));
+            upButton.addEventListener('click', (e) => {
+                if (!e.target.disabled) {
+                    moveLiftInOrder(i + 1, 'up');
+                }
+            });
 
             const downButton = document.createElement('button');
             downButton.classList.add('down');
             downButton.textContent = 'Down';
-            downButton.addEventListener('click', () => moveLiftInOrder(i + 1));
+            downButton.addEventListener('click', (e) => {
+                if (!e.target.disabled) {
+                    moveLiftInOrder(i + 1, 'down');
+                }
+            });
 
             if (i === n - 1) upButton.style.display = 'none';
             if (i === 0) downButton.style.display = 'none';
@@ -221,4 +261,6 @@ backButton.addEventListener('click', () => {
     lifts = [];
     floorOccupancy = {};
     liftsEnRoute = {};
+    busyUpFloors.clear();
+    busyDownFloors.clear();
 });
