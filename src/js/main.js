@@ -32,6 +32,11 @@ function findClosestLift(floorNumber) {
     for (let lift of lifts) {
         if (lift.dataset.status === "free") {
             const distance = Math.abs(parseInt(lift.dataset.current) - floorNumber);
+            
+            if ((floorNumber === 1 || floorNumber === parseInt(floorNos.value)) && lift !== lifts[0]) {
+                continue;
+            }
+
             if (distance < minDistance) {
                 minDistance = distance;
                 closestLift = lift;
@@ -42,28 +47,75 @@ function findClosestLift(floorNumber) {
     return closestLift;
 }
 
+
 function moveLiftInOrder(floorNumber, direction) {
     const busySet = direction === 'up' ? busyUpFloors : busyDownFloors;
-    if (busySet.has(floorNumber)) {
-        console.log(`Floor ${floorNumber} ${direction} is busy. Request queued.`);
-        storeLiftRequest(floorNumber, direction);
-        return;
-    }
-
-    let stationaryLift = lifts.find(lift => lift.dataset.status === "free" && parseInt(lift.dataset.current) === floorNumber);
-    if (stationaryLift) {
-        doorsMovement(stationaryLift, floorNumber, direction);
-        return;
-    }
-
-    let closestLift = findClosestLift(floorNumber);
-    if (closestLift) {
-        liftMovement(closestLift, floorNumber, direction);
-        liftsEnRoute[floorNumber] = (liftsEnRoute[floorNumber] || 0) + 1;
-        busySet.add(floorNumber);
-        updateFloorButton(floorNumber, direction, true);
+    
+    if (floorNumber === 1 || floorNumber === parseInt(floorNos.value)) {
+        let closestLift = findClosestLift(floorNumber);
+        if (closestLift) {
+            liftMovement(closestLift, floorNumber, direction);
+            busySet.add(floorNumber);
+            updateFloorButton(floorNumber, direction, true);
+        } else {
+            let idleLift = lifts.find(lift => lift.dataset.status === "free");
+            if (idleLift) {
+                liftMovement(idleLift, floorNumber, direction);
+                busySet.add(floorNumber);
+                updateFloorButton(floorNumber, direction, true);
+            } else {
+                storeLiftRequest(floorNumber, direction);
+            }
+        }
     } else {
-        storeLiftRequest(floorNumber, direction);
+        // Regular behavior for other floors
+        if (busySet.has(floorNumber) && floorOccupancy[floorNumber] >= 2) {
+            console.log(`Floor ${floorNumber} ${direction} is busy. Request queued.`);
+            storeLiftRequest(floorNumber, direction);
+            return;
+        }
+
+        if (busySet.has(floorNumber) && floorOccupancy[floorNumber] < 2) {
+            let stationaryLift = lifts.find(lift => lift.dataset.status === "free" && parseInt(lift.dataset.current) === floorNumber);
+            if (stationaryLift) {
+                doorsMovement(stationaryLift, floorNumber, direction);
+                return;
+            }
+
+            let closestLift = findClosestLift(floorNumber);
+            if (closestLift) {
+                liftMovement(closestLift, floorNumber, direction);
+                liftsEnRoute[floorNumber] = (liftsEnRoute[floorNumber] || 0) + 1;
+                busySet.add(floorNumber);
+                updateFloorButton(floorNumber, direction, true);
+            } else {
+                let idleLift = lifts.find(lift => lift.dataset.status === "free");
+                if (idleLift) {
+                    liftMovement(idleLift, floorNumber, direction);
+                    busySet.add(floorNumber);
+                    updateFloorButton(floorNumber, direction, true);
+                } else {
+                    storeLiftRequest(floorNumber, direction);
+                }
+            }
+        } else {
+            let closestLift = findClosestLift(floorNumber);
+            if (closestLift) {
+                liftMovement(closestLift, floorNumber, direction);
+                liftsEnRoute[floorNumber] = (liftsEnRoute[floorNumber] || 0) + 1;
+                busySet.add(floorNumber);
+                updateFloorButton(floorNumber, direction, true);
+            } else {
+                let idleLift = lifts.find(lift => lift.dataset.status === "free");
+                if (idleLift) {
+                    liftMovement(idleLift, floorNumber, direction);
+                    busySet.add(floorNumber);
+                    updateFloorButton(floorNumber, direction, true);
+                } else {
+                    storeLiftRequest(floorNumber, direction);
+                }
+            }
+        }
     }
 }
 
@@ -90,10 +142,14 @@ function doorsMovement(lift, floorNumber, direction) {
         lift.dataset.status = "free";
         const busySet = direction === 'up' ? busyUpFloors : busyDownFloors;
         busySet.delete(parseInt(lift.dataset.current));
+
+        floorOccupancy[floorNumber]--;
+
         updateFloorButton(parseInt(lift.dataset.current), direction, false);
         checkQueue();
     }, 5000);
 }
+
 
 function liftMovement(lift, floorNumber, direction) {
     lift.dataset.status = "busy";
@@ -134,7 +190,7 @@ function updateFloorButton(floorNumber, direction, isBusy) {
         button.style.backgroundColor = 'red';
     } else {
         button.disabled = false;
-        button.style.backgroundColor = ''; // Reset to default color
+        button.style.backgroundColor = '';
     }
 }
 
@@ -159,6 +215,10 @@ submitButton.addEventListener('click', () => {
         const newSimLiftsContainer = document.createElement('div');
         newSimLiftsContainer.id = 'sim-lifts';
 
+        const liftAreaWidth = m * 70;
+        const extraSpace = Math.max(300, liftAreaWidth * 0.5);
+        const simulationWidth = liftAreaWidth + extraSpace;
+
         for (let i = 1; i <= n; i++) {
             floorOccupancy[i] = 0;
             liftsEnRoute[i] = 0;
@@ -167,6 +227,7 @@ submitButton.addEventListener('click', () => {
         for (let i = 0; i < n; i++) {
             const floorDiv = document.createElement('div');
             floorDiv.classList.add('sim-floors');
+            floorDiv.style.width = `${simulationWidth}px`;
 
             const buttonContainer = document.createElement('div');
             buttonContainer.classList.add('button-container');
@@ -200,6 +261,7 @@ submitButton.addEventListener('click', () => {
 
             const line = document.createElement('div');
             line.classList.add('line');
+            line.style.width = '100%';
 
             const floorNo = document.createElement('div');
             floorNo.classList.add('floor-no');
@@ -214,6 +276,8 @@ submitButton.addEventListener('click', () => {
             simulationSection.appendChild(floorDiv);
 
             if (i === 0) {
+                newSimLiftsContainer.style.width = `${liftAreaWidth}px`;
+                newSimLiftsContainer.style.position = 'relative';
                 for (let j = 0; j < m; j++) {
                     const lift = document.createElement('div');
                     lift.classList.add('lift');
@@ -240,15 +304,14 @@ submitButton.addEventListener('click', () => {
                 floorOccupancy[1] = m;
             }
         }
-        newSimLiftsContainer.scrollLeft = newSimLiftsContainer.scrollWidth;
+
+        simulationSection.style.width = `${simulationWidth}px`; 
+        simulationSection.style.overflow = 'auto'; 
         inputSection.style.display = 'none';
         simulationSection.style.display = 'flex';
         backButton.style.display = 'block';
 
-        newSimLiftsContainer.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            newSimLiftsContainer.scrollLeft += e.deltaY;
-        });
+
     }
 });
 
